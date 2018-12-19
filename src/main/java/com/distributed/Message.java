@@ -1,25 +1,49 @@
 package com.distributed;
 
+import java.io.Serializable;
+
 /**
- * @author: Chen Yulei
- * @since: 2018-12-18
+ * @author:  Chen Yulei
+ * @since:  2018-12-18
  **/
-public class Message {
 
-    private enum MessageType {
-        PING ('P'),
-        PING_REQUEST ('Q'),
-        ACK ('A'),
-        ACK_REQUEST ('B'),
-        MISSING_NOTICE ('M'),
-        END ('E');
+// Serializable: An object can be sent not only String
+public class Message implements Serializable {
 
-        private char messagePrefix;
-        MessageType(char p) {
-            messagePrefix = p;
-        }
+    // "PING" "REQ" "ACK" "MOVE"
+    private String type;
+    // 发送端
+    private NodeID SourceID;
+    // 接收端
+    private NodeID SinkID;
 
+    public Message(String type, NodeID sourceID, NodeID sinkID) {
+        this.type = type;
+        SourceID = sourceID;
+        SinkID = sinkID;
     }
 
+    public String getType() {
+        return type;
+    }
 
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public NodeID getSourceID() {
+        return SourceID;
+    }
+
+    public void setSourceID(NodeID sourceID) {
+        SourceID = sourceID;
+    }
+
+    public NodeID getSinkID() {
+        return SinkID;
+    }
+
+    public void setSinkID(NodeID sinkID) {
+        SinkID = sinkID;
+    }
 }
