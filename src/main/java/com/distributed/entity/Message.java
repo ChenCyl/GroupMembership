@@ -1,4 +1,4 @@
-package com.distributed;
+package com.distributed.entity;
 
 import java.io.Serializable;
 
@@ -45,5 +45,14 @@ public class Message implements Serializable {
 
     public void setSinkID(NodeID sinkID) {
         SinkID = sinkID;
+    }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "type='" + type + '\'' +
+                ", SourceID=" + SourceID +
+                ", SinkID=" + SinkID +
+                '}';
     }
 }

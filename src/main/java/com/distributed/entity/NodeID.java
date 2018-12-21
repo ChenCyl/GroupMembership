@@ -1,4 +1,4 @@
-package com.distributed;
+package com.distributed.entity;
 
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -18,14 +18,6 @@ public class NodeID implements Serializable {
 //        this.timestamp = timestamp;
     }
 
-    @Override
-    public String toString() {
-        return "NodeID{" +
-                "inetAddress=" + inetAddress +
-                ", port=" + port +
-                '}';
-    }
-
     public InetAddress getInetAddress() {
         return inetAddress;
     }
@@ -41,4 +33,27 @@ public class NodeID implements Serializable {
     public void setPort(int port) {
         this.port = port;
     }
+
+    @Override
+    public String toString() {
+        return "NodeID{" +
+                "inetAddress=" + inetAddress +
+                ", port=" + port +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NodeID) {
+            NodeID nodeID = (NodeID) obj;
+            if (this.inetAddress.equals(nodeID.getInetAddress()) && this.port == nodeID.getPort()) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        return super.equals(obj);
+    }
+
 }

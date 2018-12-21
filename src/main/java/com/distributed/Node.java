@@ -1,7 +1,11 @@
 package com.distributed;
 
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
-import org.omg.PortableServer.THREAD_POLICY_ID;
+import com.distributed.entity.NodeID;
+import com.distributed.thread.Detector;
+import com.distributed.thread.JoinReceiver;
+import com.distributed.thread.Receiver;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggerFactory;
 
 import java.io.*;
 import java.net.*;
@@ -29,26 +33,19 @@ import java.util.List;
  * @since: 2018-12-18
  **/
 public class Node {
+    static Logger logger = Logger.getLogger(Node.class);
 
     public static List<NodeID> membershipList;
     public static List<NodeID> detectNodes;
-
     private DatagramSocket socket;
     private boolean alive; //no use ??? where to use?
-
-//    private Integer port;
-//    private InetAddress inetAddress;
     private NodeID id; // ipAddress+port
-
     private Boolean isIntroducer;
-//    private InetAddress introducerAddress;
-//    private int introducerPort;
     private NodeID instroducerID;
 
     static {
         membershipList = new ArrayList<NodeID>();
         detectNodes = new ArrayList<NodeID>();
-
     }
 
     // 非 introducer 的构造方法
@@ -63,13 +60,12 @@ public class Node {
         this.isIntroducer = false;
         this.instroducerID = new NodeID(introducerAddress, introducerPort);
         this.alive = true;
-        membershipList.add(id);
-        membershipList.add(instroducerID);
+//        membershipList.add(id);
+//        membershipList.add(instroducerID);
     }
 
     // introducer 的构造方法
-    public Node(String port) {
-
+    public Node(int port) {
         try {
             this.id = new NodeID(InetAddress.getLocalHost(), port);
         } catch (UnknownHostException e) {
@@ -79,28 +75,43 @@ public class Node {
         this.isIntroducer = true;
         this.alive = true;
         membershipList.add(id);
+        logger.info("Introducer Created.");
     }
 
 
     public void run() throws IOException {
+        new Thread(new Receiver(id.getPort()), "ReveiverThread").start();
 
         if (isIntroducer) {
-            new Thread(new JoinReceiver(id.getPort())).start();
+            Thread joinReceiver = new Thread(new JoinReceiver(id.getPort() - 1), "JoinReceiverThread");
+            joinReceiver.start();
         }
         else {
             // 不用单独跑线程 进来之后就必须发给 introducer 没有加入结点就做不了之后的事
-            Socket socket = new Socket(instroducerID.getInetAddress().getHostAddress(), instroducerID.getPort());
+            Socket socket = new Socket(instroducerID.getInetAddress().getHostAddress(), instroducerID.getPort() - 1);
             PrintWriter out = new PrintWriter(socket.getOutputStream());
-            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-            // send self id to introducer
             out.println(id.getInetAddress().getHostAddress() + "_" + id.getPort());
+            out.flush();
+            logger.info("[Send] Tell introducer I am " + id);
             // receive the membership
-            membershipList = (List<NodeID>) in.readObject();
-            socket.close();
+            try {
+                ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+                Object o = in.readObject();
+                if (o instanceof List) {
+                    membershipList = (List<NodeID>) o;
+                    logger.info("[Receive] MemberList: " + membershipList.toString());
+                }
+                else {
+                    logger.error("[Receive] The type of member list from instroducer is not List.");
+                }
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } finally {
+                out.close();
+                socket.close();
+            }
         }
-
-        new Thread(new Receiver(id.getPort())).start();
-        new Thread(new Detector(id)).start();
+        new Thread(new Detector(id), "DetectorThread").start();
 
     }
 }
