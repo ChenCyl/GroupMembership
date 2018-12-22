@@ -1,17 +1,17 @@
 package com.distributed.thread;
 
 import com.distributed.Node;
+import com.distributed.Util;
+import com.distributed.entity.Message;
 import com.distributed.entity.NodeID;
 import org.apache.log4j.Logger;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Scanner;
 
 /**
@@ -58,7 +58,15 @@ public class JoinReceiver implements Runnable {
                     // send memberList to the new node
                     out = new ObjectOutputStream(socket.getOutputStream());
                     out.writeObject(Node.membershipList);
-                    logger.info("[SendAll] Update membership List .");
+                    logger.info("[Send to New Node] Update membership List .");
+                    // use UDP to send the JOIN new node message
+                    DatagramSocket socket1 = new DatagramSocket();
+                    Message message = new Message("JOIN", newNodeID, null);
+                    for (int i = 0; i < Node.membershipList.size(); i++) {
+                        NodeID targetID = Node.membershipList.get(i);
+                        Util.sendMessage(message, targetID, socket1);
+                    }
+                    logger.info("[SendAll] JOIN the new node.");
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {

@@ -49,7 +49,6 @@ public class Receiver implements Runnable {
                     Util.sendMessage(message, receivedMessage.getSinkID(), socket);
                 } else if (receivedType.equals("ACK")) {
                     NodeID detectID = receivedMessage.getSourceID();
-                    logger.info("[------] detectNode" + detectID);
                     if (Node.detectNodes.contains(detectID)) {
                         Node.detectNodes.remove(detectID);
                         logger.info("[Detect] " + Node.detectNodes);
@@ -59,6 +58,11 @@ public class Receiver implements Runnable {
                 } else if (receivedType.equals("MOVE")) {
                     Node.membershipList.remove(receivedMessage.getSourceID());
                     logger.info("[-] Failure node: " + receivedMessage.getSourceID());
+                } else if (receivedType.equals("JOIN")) {
+                    NodeID newNodeId = receivedMessage.getSourceID();
+                    if (!Node.membershipList.contains(newNodeId)) {
+                        Node.membershipList.add(newNodeId);
+                    }
                 } else {
                     logger.error("咋回事啊，你是我没有定义类型的消息。");
                 }

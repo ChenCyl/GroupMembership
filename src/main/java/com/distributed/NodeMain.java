@@ -11,6 +11,6 @@ import java.net.UnknownHostException;
 public class NodeMain {
     public static void main(String[] args) throws IOException {
         String introIp = "127.0.0.1";
-        new Node(9002, InetAddress.getByName(introIp), 9001).run();
+        new Node(9005, InetAddress.getByName(introIp), 9001).run();
     }
 }
