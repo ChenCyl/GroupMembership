@@ -1,4 +1,4 @@
-package com.distributed;
+package com.distributed.util;
 
 import com.distributed.entity.Message;
 import com.distributed.entity.NodeID;

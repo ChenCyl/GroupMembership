@@ -5,6 +5,7 @@ import com.distributed.entity.NodeID;
 import com.distributed.thread.Detector;
 import com.distributed.thread.JoinReceiver;
 import com.distributed.thread.Receiver;
+import com.distributed.util.Util;
 import org.apache.log4j.Logger;
 
 
@@ -38,7 +39,7 @@ public class Node {
     private Logger logger = Logger.getLogger(Node.class);
     public static List<NodeID> membershipList;
     public static List<NodeID> detectNodes;
-    private DatagramSocket socket;
+    public static Boolean EXIT = false; //EXIT all daemon thread
     private NodeID id; // ipAddress+port
     private Boolean isIntroducer;
     private NodeID instroducerID;
@@ -70,7 +71,9 @@ public class Node {
         }
 
         this.isIntroducer = true;
-        membershipList.add(id);
+        if (membershipList.size() == 0) {
+            membershipList.add(id);
+        }
         logger.info("Introducer Created.");
     }
 
@@ -79,12 +82,13 @@ public class Node {
         if (msList != null) {
             membershipList = msList;
         }
-        Thread reveiverThread = new Thread(new Receiver(id.getPort()), "ReveiverThread");
+        Thread reveiverThread = new Thread(new Receiver(id.getPort()), "Reveiver");
         reveiverThread.setDaemon(true);
         reveiverThread.start();
 
         if (isIntroducer) {
-            Thread joinReceiver = new Thread(new JoinReceiver(id.getPort() - 1), "JoinReceiverThread");
+
+            Thread joinReceiver = new Thread(new JoinReceiver(id.getPort() - 1), "JoinReceiver");
             joinReceiver.setDaemon(true);
             joinReceiver.start();
         }
@@ -93,7 +97,7 @@ public class Node {
             connectToIntroducer();
         }
 
-        Thread detectorThread = new Thread(new Detector(id), "DetectorThread");
+        Thread detectorThread = new Thread(new Detector(id), "Detector");
         detectorThread.setDaemon(true);
         detectorThread.start();
 
@@ -101,13 +105,21 @@ public class Node {
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNext()) {
             if (scanner.next().equals("q")) {
+                Node.EXIT = true; // close all daemon thread
+                try {
+                    Thread.sleep(200); // 先等 detector ping 完 接收到 ack 之后再 close receiver
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                // 告诉那两个在 receive 堵塞的线程该关闭了
+                tellReceiversToClose();
+                System.out.println("you hava left the group.");
+                System.out.println("You can input [r] to rejoin in the group.");
+//                scanner.close();
+                logger.info("[Leave]");
                 if (!isIntroducer) {
                     membershipList = null;
                 }
-                System.out.println("you hava left the group.");
-                System.out.println("You can input [r] to rejoin in the group.");
-                scanner.close();
-                logger.info("[Leave] I am " + id);
                 return membershipList;
             }
             else if (scanner.next().equals("m")) {
@@ -145,13 +157,52 @@ public class Node {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            out.close();
+            if (out != null) {
+                out.close();
+            }
             try {
-                socket.close();
+                if (socket != null) {
+                    socket.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void tellReceiversToClose() {
+        if (isIntroducer) {
+            Socket socket = null;
+            PrintWriter out = null;
+            try {
+                socket = new Socket(id.getInetAddress().getHostAddress(), id.getPort() - 1);
+                if (socket != null) {
+                    out = new PrintWriter(socket.getOutputStream());
+                    out.println(id.getInetAddress().getHostAddress() + "_" + id.getPort());
+                    out.flush();
+                }
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (socket != null) {
+                    try {
+                        socket.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        Message message = new Message("CLOSE", null, null);
+        DatagramSocket socket = null;
+        try {
+            socket = new DatagramSocket();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        Util.sendMessage(message, id, socket);
     }
 }
 

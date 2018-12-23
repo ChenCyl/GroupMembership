@@ -1,6 +1,6 @@
 package com.distributed.thread;
 
-import com.distributed.Util;
+import com.distributed.util.Util;
 import com.distributed.entity.Message;
 import com.distributed.Node;
 import com.distributed.entity.NodeID;
@@ -34,7 +34,7 @@ public class Receiver implements Runnable {
     }
     public void run() {
         try {
-            while (true) {
+            while (!Node.EXIT) {
                 byte[] buf = new byte[1024];
                 DatagramPacket receivedPacket = new DatagramPacket(buf, buf.length);
                 socket.receive(receivedPacket); // -------- wait
@@ -42,6 +42,11 @@ public class Receiver implements Runnable {
                 String receivedType = receivedMessage.getType();
 
                 if (receivedType.equals("PING")) {
+                    // 这条可以作用于 rejoin 的 introducer
+                    // 因为 rejoin 的 introducer 有着大家的名单 但是大家却没有它
+                    if (!Node.membershipList.contains(receivedMessage.getSourceID())) {
+                        Node.membershipList.add(receivedMessage.getSourceID());
+                    }
                     Message message = new Message("ACK", receivedMessage.getSinkID(), receivedMessage.getSourceID());
                     Util.sendMessage(message, receivedMessage.getSourceID(), socket);
                 } else if (receivedType.equals("REQ")) {
@@ -70,7 +75,10 @@ public class Receiver implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            socket.close();
+            if (socket != null) {
+                socket.close();
+                System.out.println("我自闭了");
+            }
         }
     }
 }
