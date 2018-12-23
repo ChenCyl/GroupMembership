@@ -16,7 +16,7 @@ import java.util.List;
  * @since: 2018-12-19
  **/
 public class Detector implements Runnable {
-    static Logger logger = Logger.getLogger(Detector.class);
+    private Logger logger = Logger.getLogger(Detector.class);
 
     private NodeID myId;
     private DatagramSocket socket;
@@ -46,7 +46,7 @@ public class Detector implements Runnable {
                     Util.sendMessage(message, targetID, socket);
                     // 将目标结点加入到 detect 中
                     Node.detectNodes.add(targetID);
-                    logger.info("[Detect] " + Node.detectNodes);
+                    logger.info("[Detect +] " + Node.detectNodes);
 
                     Thread.sleep(200);
 

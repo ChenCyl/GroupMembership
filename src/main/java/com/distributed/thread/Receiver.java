@@ -16,7 +16,7 @@ import java.net.SocketException;
  * @since: 2018-12-19
  **/
 public class Receiver implements Runnable {
-    static org.apache.log4j.Logger logger = Logger.getLogger(Receiver.class);
+    static Logger logger = Logger.getLogger(Receiver.class);
 
     private static final int TIMEOUT = 1000;  //设置接收数据的超时时间
     private int port;
@@ -51,7 +51,7 @@ public class Receiver implements Runnable {
                     NodeID detectID = receivedMessage.getSourceID();
                     if (Node.detectNodes.contains(detectID)) {
                         Node.detectNodes.remove(detectID);
-                        logger.info("[Detect] " + Node.detectNodes);
+                        logger.info("[Detect -] " + Node.detectNodes);
                     } else {
                         logger.info("已经收到过 ack 了哦，谢谢你帮我 ping");
                     }
@@ -64,7 +64,7 @@ public class Receiver implements Runnable {
                         Node.membershipList.add(newNodeId);
                     }
                 } else {
-                    logger.error("咋回事啊，你是我没有定义类型的消息。");
+                    logger.error("咋回事啊，没见过你这个品种的消息啊。");
                 }
             }
         } catch (IOException e) {

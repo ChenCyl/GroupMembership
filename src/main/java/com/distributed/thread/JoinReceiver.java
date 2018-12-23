@@ -19,7 +19,7 @@ import java.util.Scanner;
  * @since: 2018-12-19
  **/
 public class JoinReceiver implements Runnable {
-    static Logger logger = Logger.getLogger(JoinReceiver.class);
+    private Logger logger = Logger.getLogger(JoinReceiver.class);
 
     private int port;
     private ServerSocket serverSocket;
