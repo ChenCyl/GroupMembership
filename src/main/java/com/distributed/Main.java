@@ -52,7 +52,7 @@ public class Main {
                 membershipList = new Node(9001).run(membershipList);
             }
         } else {
-            new Node(9004, InetAddress.getByName("127.0.0.1"), 9001).run(null);
+            new Node(9003, InetAddress.getByName("127.0.0.1"), 9001).run(null);
             // 是否 rejoin
             while (rejoin()) {
                 // rejoin 过后的端口号不变

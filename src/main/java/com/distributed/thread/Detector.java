@@ -67,7 +67,7 @@ public class Detector implements Runnable {
                             pingList.remove(targetID);
                             Node.membershipList.remove(targetID);
                             Node.detectNodes.remove(targetID);
-                            logger.info("[-] Remove: " + targetID);
+                            logger.warn("[-] Remove: " + targetID);
                             message = new Message("MOVE", targetID, null);
                             for (NodeID id : pingList) {
                                 Util.sendMessage(message, id, socket);

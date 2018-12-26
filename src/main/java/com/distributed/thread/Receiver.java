@@ -62,7 +62,7 @@ public class Receiver implements Runnable {
                     }
                 } else if (receivedType.equals("MOVE")) {
                     Node.membershipList.remove(receivedMessage.getSourceID());
-                    logger.info("[-] Failure node: " + receivedMessage.getSourceID());
+                    logger.warn("[-] Failure node: " + receivedMessage.getSourceID());
                 } else if (receivedType.equals("JOIN")) {
                     NodeID newNodeId = receivedMessage.getSourceID();
                     if (!Node.membershipList.contains(newNodeId)) {

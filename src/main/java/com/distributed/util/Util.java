@@ -18,6 +18,7 @@ public class Util {
     private static Logger logger = Logger.getLogger(Util.class);
 
     public static void sendMessage(Message message, NodeID targetID, DatagramSocket socket) {
+//        Message message = simulateLoss(0.3, realMessage);
         ByteArrayOutputStream bos = null;
         ObjectOutputStream out = null;
         try {
@@ -82,4 +83,35 @@ public class Util {
         }
         return reList;
     }
+
+    public static Message simulateLoss(double lossRate, Message relMessage) {
+        if (lossRate == 0) {
+            return relMessage;
+        }
+        else {
+            Message lossMessage = new Message("LOSS", null, null);
+            long l = System.currentTimeMillis();
+            int i = (int)( l % 100 ); // [0, 100)
+            if (lossRate == 0.03) {
+                if (i < 3) {
+                    return lossMessage;
+                }
+            }
+            else if (lossRate == 0.1) {
+                if (i < 10) {
+                    return lossMessage;
+                }
+            }
+            else if (lossRate == 0.3) {
+                if (i < 30) {
+                    return lossMessage;
+                }
+            }
+            else {
+                logger.error("[传入的丢包率有误！]");
+            }
+        }
+        return relMessage;
+    }
+
 }
