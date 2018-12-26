@@ -91,7 +91,8 @@ public class JoinReceiver implements Runnable {
             try {
                 if (serverSocket != null) {
                     serverSocket.close();
-                    System.out.println("我自闭了");
+//                    System.out.println("我自闭了");
+                    logger.info("[JoinReceiver Socket Closed]");
                 }
             } catch (IOException e) {
                 e.printStackTrace();

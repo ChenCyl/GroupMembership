@@ -33,7 +33,9 @@ public class Detector implements Runnable {
     public void run() {
         try {
             while (!Node.EXIT) {
+
                 Thread.sleep(200);
+
                 // 给自己发 ping 其实也是没有问题的... 但是 ... 还是不要自己 ping 自己了吧
                 List<NodeID> pingList = Util.listWithoutSelf(Node.membershipList, myId);
                 logger.info("-------- pingList:" + pingList.toString() );
@@ -58,6 +60,7 @@ public class Detector implements Runnable {
                             if (memberSize > 2) {
                                 Util.sendMessage(message, pingList.get(2), socket);
                             }
+
                             Thread.sleep(200);
                         }
                         if (Node.detectNodes.contains(targetID)) {

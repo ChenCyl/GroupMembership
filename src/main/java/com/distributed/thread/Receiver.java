@@ -58,7 +58,7 @@ public class Receiver implements Runnable {
                         Node.detectNodes.remove(detectID);
                         logger.info("[Detect -] " + Node.detectNodes);
                     } else {
-                        logger.info("已经收到过 ack 了哦，谢谢你帮我 ping");
+                        logger.info("Having received ack, thanks for ping.");
                     }
                 } else if (receivedType.equals("MOVE")) {
                     Node.membershipList.remove(receivedMessage.getSourceID());
@@ -68,8 +68,10 @@ public class Receiver implements Runnable {
                     if (!Node.membershipList.contains(newNodeId)) {
                         Node.membershipList.add(newNodeId);
                     }
+                } else if (receivedType.equals("CLOSE")) {
+                    ;
                 } else {
-                    logger.error("咋回事啊，没见过你这个品种的消息啊。");
+                    logger.error("The type of message is not defined.");
                 }
             }
         } catch (IOException e) {
@@ -77,7 +79,8 @@ public class Receiver implements Runnable {
         } finally {
             if (socket != null) {
                 socket.close();
-                System.out.println("我自闭了");
+//                System.out.println("我自闭了");
+                logger.info("[Receiver Socked Closed]");
             }
         }
     }
