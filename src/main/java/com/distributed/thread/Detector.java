@@ -38,7 +38,7 @@ public class Detector implements Runnable {
 
                 // 给自己发 ping 其实也是没有问题的... 但是 ... 还是不要自己 ping 自己了吧
                 List<NodeID> pingList = Util.listWithoutSelf(Node.membershipList, myId);
-                logger.info("-------- pingList:" + pingList.toString() );
+                logger.info("* pingList:" + pingList.toString() );
                 int memberSize = pingList.size();
                 if (memberSize > 0) {
                     // 随机选择一个发送 ping

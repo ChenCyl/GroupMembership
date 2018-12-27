@@ -22,8 +22,9 @@ public class Main {
     private static boolean isIntroducer = false;
 
     // 正式操作
-    public static void main1(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
         handleCommand(args);
+        System.setProperty("port", String.valueOf(port));
         // 普通 node run
         if (!isIntroducer) {
             new Node(port, InetAddress.getByName(introAddress), introPort).run(null);
@@ -43,8 +44,9 @@ public class Main {
         }
     }
     // 单机操作
-    public static void main(String[] args) throws UnknownHostException {
-        Boolean isIntroducer = false;
+    public static void main1(String[] args) throws UnknownHostException {
+        System.setProperty("port", String.valueOf(9001));
+        Boolean isIntroducer = true;
         if (isIntroducer) {
             List<NodeID> membershipList = new Node(9001).run(null);
             while (rejoin()) {
@@ -52,7 +54,7 @@ public class Main {
                 membershipList = new Node(9001).run(membershipList);
             }
         } else {
-            new Node(9003, InetAddress.getByName("127.0.0.1"), 9001).run(null);
+            new Node(9002, InetAddress.getByName("127.0.0.1"), 9001).run(null);
             // 是否 rejoin
             while (rejoin()) {
                 // rejoin 过后的端口号不变
@@ -71,9 +73,9 @@ public class Main {
         // Node 不是线程，所以之后 return 了之后才会开始监听键盘，和 Node 里监听键盘不冲突
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNext()) {
-            if (scanner.next().equals("r")) {
+            String input = scanner.next();
+            if (input.equals("r")) {
                 System.out.println("You hava rejoined in the group.");
-                System.out.println("You can input: [q] to leave the group. [m] to show the membership list.");
 //                scanner.close();
                 logger.info("[REJOIN]");
                 Node.EXIT = false;

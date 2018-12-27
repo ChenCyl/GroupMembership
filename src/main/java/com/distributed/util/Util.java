@@ -30,6 +30,7 @@ public class Util {
             out.writeObject(message);
             // 获取内存流中的对象并转为字节
             byte[] bytes = bos.toByteArray();
+            logger.debug(">>>> 包大小为 " + bytes.length);
             // 新建 upd 包并通过 sock 发送
             DatagramPacket packet = new DatagramPacket(bytes, bytes.length, targetID.getInetAddress(), targetID.getPort());
             socket.send(packet);
@@ -115,3 +116,4 @@ public class Util {
     }
 
 }
+

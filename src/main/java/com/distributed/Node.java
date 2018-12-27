@@ -104,7 +104,8 @@ public class Node {
         System.out.println("You can input: [q] to leave the group. [m] to show the membership list.");
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNext()) {
-            if (scanner.next().equals("q")) {
+            String input = scanner.next();
+            if (input.equals("q")) {
                 Node.EXIT = true; // close all daemon thread
                 try {
                     Thread.sleep(200); // 先等 detector ping 完 接收到 ack 之后再 close receiver
@@ -122,7 +123,7 @@ public class Node {
                 }
                 return membershipList;
             }
-            else if (scanner.next().equals("m")) {
+            else if (input.equals("m")) {
                 System.out.println(membershipList.toString());
             }
             else {
