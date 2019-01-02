@@ -12,7 +12,7 @@
 
 #### Step 1: download the .jar package
 
-[Click here to download directly](https://github.com/ChenCyl/GroupMembership/releases/download/v1.0.1/GroupMembership-1.0-SNAPSHOT.jar)
+[Click here to download directly](https://github.com/ChenCyl/GroupMembership/releases/download/v1.0.2/GroupMembership-1.0.2.jar)
 
 #### Step 2: run
 
