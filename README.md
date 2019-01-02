@@ -44,3 +44,12 @@
 - If you are a normal node
   - `java -jar GroupMembership-1.0.2.jar -p <port> -i <introducer_ip_address> <introducer_port> `
   - eg: `java -jar GroupMembership-1.0.2.jar -p 9002 -i 192.168.1.114 9001`
+
+## Tips!
+
+- If you are a Linux user, please `vim /etc/hosts` and comment out the configuration about localhost.
+  - eg: `#127.0.0.1	localhost`
+- If you are a windows user, please remember to disable virtual network interface cards.
+
+If you hava any questions about running the project among different operating systems, please email me @hitoka@163.com
+
