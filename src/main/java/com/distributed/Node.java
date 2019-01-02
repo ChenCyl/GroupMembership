@@ -51,13 +51,11 @@ public class Node {
 
     // 非 introducer 的构造方法
     public Node(int port, InetAddress introducerAddress, int introducerPort) {
-
         try {
             this.id = new NodeID(InetAddress.getLocalHost(), port);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-
         this.isIntroducer = false;
         this.instroducerID = new NodeID(introducerAddress, introducerPort);
     }
@@ -69,7 +67,6 @@ public class Node {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-
         this.isIntroducer = true;
         if (membershipList.size() == 0) {
             membershipList.add(id);
@@ -143,7 +140,6 @@ public class Node {
             out.flush();
             logger.info("[Send] Tell introducer I am " + id);
             // receive the membership
-
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
             Object o = in.readObject();
             if (o instanceof List) {

@@ -4,7 +4,6 @@ import com.distributed.entity.NodeID;
 import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -22,16 +21,24 @@ public class Main {
     private static boolean isIntroducer = false;
 
     // 正式操作
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         handleCommand(args);
         System.setProperty("port", String.valueOf(port));
         // 普通 node run
         if (!isIntroducer) {
-            new Node(port, InetAddress.getByName(introAddress), introPort).run(null);
+            try {
+                new Node(port, InetAddress.getByName(introAddress), introPort).run(null);
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
             // 是否 rejoin
             while (rejoin()) {
                 // rejoin 过后的端口号不变
-                new Node(port, InetAddress.getByName(introAddress), introPort).run(null);
+                try {
+                    new Node(port, InetAddress.getByName(introAddress), introPort).run(null);
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                }
             }
         }
         // introducer run
@@ -45,8 +52,8 @@ public class Main {
     }
     // 单机操作
     public static void main1(String[] args) throws UnknownHostException {
-        System.setProperty("port", String.valueOf(9001));
-        Boolean isIntroducer = true;
+        System.setProperty("port", String.valueOf(9002));
+        Boolean isIntroducer = false;
         if (isIntroducer) {
             List<NodeID> membershipList = new Node(9001).run(null);
             while (rejoin()) {
@@ -54,11 +61,13 @@ public class Main {
                 membershipList = new Node(9001).run(membershipList);
             }
         } else {
-            new Node(9002, InetAddress.getByName("127.0.0.1"), 9001).run(null);
+            // 马丁的电脑为 introducer 时
+            new Node(9003, InetAddress.getByName("127.0.0.1"), 9001).run(null);
+//            new Node(9002, InetAddress.getByName("127.0.0.1"), 9001).run(null);
             // 是否 rejoin
             while (rejoin()) {
                 // rejoin 过后的端口号不变
-                new Node(9005, InetAddress.getByName("127.0.0.1"), 9001).run(null);
+                new Node(9002, InetAddress.getByName("127.0.0.1"), 9001).run(null);
             }
 
         }

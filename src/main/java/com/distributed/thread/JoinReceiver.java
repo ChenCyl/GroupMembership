@@ -51,7 +51,15 @@ public class JoinReceiver implements Runnable {
                     }
                     logger.info("[Receive] From New node: " + newJoinNode);
                     String[] newJoinNodeSplit = newJoinNode.split("_");
+                    // newJoinNodeSplit[0] = 192.168.1.11
+                    // newJoinNodeSplit[1] = 9001
                     // add new node to memberList
+                    // windows 系统会在字符串后加上\r 导致 parseInt 不能成功
+                    for (int i = 0; i < newJoinNodeSplit[1].length(); i++) {
+                        if (newJoinNodeSplit[1].charAt(i) == '\r') {
+                            newJoinNodeSplit[1] = newJoinNodeSplit[1].substring(0, i);
+                        }
+                    }
                     newNodeID = new NodeID(InetAddress.getByName(newJoinNodeSplit[0]), Integer.parseInt(newJoinNodeSplit[1]));
                     if (!Node.membershipList.contains(newNodeID)) {
                         Node.membershipList.add(newNodeID);

@@ -5,8 +5,7 @@ import com.distributed.entity.NodeID;
 import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,6 +113,41 @@ public class Util {
         }
         return relMessage;
     }
+
+//    public static InetAddress getRealInetAddress() {
+//        // 获得本机的所有网络接口
+//        Enumeration<NetworkInterface> nifs = null;
+//        try {
+//            nifs = NetworkInterface.getNetworkInterfaces();
+//        } catch (SocketException e) {
+//            e.printStackTrace();
+//        }
+//        while (nifs.hasMoreElements()) {
+//            NetworkInterface nif = nifs.nextElement();
+//            // 获得与该网络接口绑定的 IP 地址，一般只有一个
+//            Enumeration<InetAddress> addresses = nif.getInetAddresses();
+//            while (addresses.hasMoreElements()) {
+//                InetAddress addr = addresses.nextElement();
+//                if (addr instanceof Inet4Address) { // 只关心 IPv4 地址
+//                    System.out.println("网卡接口名称：" + nif.getName());
+//                    System.out.println("网卡接口地址：" + addr.getHostAddress());
+//                    System.out.println();
+//                    // Linux
+//                    if (nif.getName().equals("wlo1")) {
+//                       System.out.println("获取到的 wlo1 的地址为: " + addr.getHostAddress());
+//                       return addr;
+//                    }
+//                    // Windows
+//                    if (nif.getName().equals("wlan")) {
+//                        System.out.println("获取到的 wlan 的地址：" + addr.getHostAddress());
+//                        return addr;
+//                    }
+//                }
+//            }
+//        }
+//        logger.error("没有找到无线网卡的地址");
+//        return null;
+//    }
 
 }
 

@@ -2,3 +2,4 @@
 .DS_Store
 log/
 target/
+log/.DS_Store
